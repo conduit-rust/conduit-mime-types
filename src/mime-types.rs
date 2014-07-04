@@ -4,7 +4,7 @@ use std::io::BufReader;
 use std::collections::HashMap;
 use serialize::{Decodable, json};
 
-static json: &'static [u8] = include_bin!("../data/mime.json");
+static json: &'static str = include_str!("../data/mime.json");
 
 pub struct Types {
     ext_by_type: HashMap<String, Vec<String>>,
@@ -14,7 +14,7 @@ pub struct Types {
 
 impl Types {
     pub fn new() -> Result<Types, ()> {
-        let parsed = try!(json::from_reader(&mut BufReader::new(json)).map_err(|_| ()));
+        let parsed = try!(json::from_str(json).map_err(|_| ()));
         let mut decoder = json::Decoder::new(parsed);
         let decoded: HashMap<String, Vec<String>> =
             try!(Decodable::decode(&mut decoder).map_err(|_| ()));
