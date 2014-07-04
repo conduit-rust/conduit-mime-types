@@ -1,6 +1,5 @@
 extern crate serialize;
 
-use std::io::BufReader;
 use std::collections::HashMap;
 use serialize::{Decodable, json};
 
@@ -37,6 +36,12 @@ impl Types {
     pub fn get_mime_type<'a>(&'a self, ext: &str) -> Option<&'a str> {
         self.type_by_ext.find_equiv(&ext).map(|v| v.as_slice())
     }
+
+    pub fn mime_for_path<'a>(&'a self, path: &Path) -> &'a str {
+        path.extension_str()
+            .and_then(|ext| self.get_mime_type(ext))
+            .unwrap_or_else(|| "text/plain")
+    }
 }
 
 #[cfg(test)]
@@ -61,5 +66,22 @@ mod test {
     fn test_by_type() {
         let t = Types::new().ok().expect("Types didn't load");
         assert_eq!(t.get_mime_type("css"), Some("text/css"));
+    }
+
+    #[test]
+    fn test_by_path() {
+        let t = Types::new().ok().expect("Types didn't load");
+
+        test_path(&t, "foo", "text/plain");
+        test_path(&t, "/path/to/foo", "text/plain");
+        test_path(&t, "foo.css", "text/css");
+        test_path(&t, "/path/to/foo.css", "text/css");
+        test_path(&t, "foo.html.css", "text/css");
+        test_path(&t, "/path/to/foo.html.css", "text/css");
+        test_path(&t, "/path/to.html/foo.css", "text/css");
+    }
+
+    fn test_path(types: &Types, path: &str, expected: &str) {
+        assert_eq!(types.mime_for_path(&Path::new(path)), expected);
     }
 }
