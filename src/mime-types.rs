@@ -30,11 +30,11 @@ impl Types {
     }
 
     pub fn get_extension<'a>(&'a self, name: &str) -> Option<&'a [String]> {
-        self.ext_by_type.find_equiv(&name).map(|v| v.as_slice())
+        self.ext_by_type.find_equiv(name).map(|v| v.as_slice())
     }
 
     pub fn get_mime_type<'a>(&'a self, ext: &str) -> Option<&'a str> {
-        self.type_by_ext.find_equiv(&ext).map(|v| v.as_slice())
+        self.type_by_ext.find_equiv(ext).map(|v| v.as_slice())
     }
 
     pub fn mime_for_path<'a>(&'a self, path: &Path) -> &'a str {
@@ -59,7 +59,7 @@ mod test {
     #[test]
     fn test_by_ext() {
         let t = Types::new().ok().expect("Types didn't load");
-        assert_eq!(t.get_extension("text/css"), Some(["css".to_str()].as_slice()));
+        assert_eq!(t.get_extension("text/css"), Some(["css".to_string()].as_slice()));
     }
 
     #[test]
