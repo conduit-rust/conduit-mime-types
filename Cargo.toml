@@ -1,9 +1,5 @@
 [package]
 
-name = "mime-types"
+name = "conduit-mime-types"
 version = "0.5.0"
 authors = ["wycats@gmail.com"]
-
-[lib]
-
-name = "mime-types"
