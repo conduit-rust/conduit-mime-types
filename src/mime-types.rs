@@ -3,18 +3,17 @@ extern crate serialize;
 use std::collections::HashMap;
 use serialize::{Decodable, json};
 
-static json: &'static str = include_str!("../data/mime.json");
+static JSON: &'static str = include_str!("../data/mime.json");
 
 #[deriving(Show, Clone, Eq, PartialEq)]
 pub struct Types {
     ext_by_type: HashMap<String, Vec<String>>,
     type_by_ext: HashMap<String, String>
-
 }
 
 impl Types {
     pub fn new() -> Result<Types, ()> {
-        let parsed = try!(json::from_str(json).map_err(|_| ()));
+        let parsed = try!(json::from_str(JSON).map_err(|_| ()));
         let mut decoder = json::Decoder::new(parsed);
         let decoded: HashMap<String, Vec<String>> =
             try!(Decodable::decode(&mut decoder).map_err(|_| ()));
@@ -31,11 +30,11 @@ impl Types {
     }
 
     pub fn get_extension<'a>(&'a self, name: &str) -> Option<&'a [String]> {
-        self.ext_by_type.find_equiv(name).map(|v| v.as_slice())
+        self.ext_by_type.get(name).map(|v| v.as_slice())
     }
 
     pub fn get_mime_type<'a>(&'a self, ext: &str) -> Option<&'a str> {
-        self.type_by_ext.find_equiv(ext).map(|v| v.as_slice())
+        self.type_by_ext.get(ext).map(|v| v.as_slice())
     }
 
     pub fn mime_for_path<'a>(&'a self, path: &Path) -> &'a str {
