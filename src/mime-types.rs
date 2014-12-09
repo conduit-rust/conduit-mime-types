@@ -5,6 +5,7 @@ use serialize::{Decodable, json};
 
 static json: &'static str = include_str!("../data/mime.json");
 
+#[deriving(Show, Clone, Eq, PartialEq)]
 pub struct Types {
     ext_by_type: HashMap<String, Vec<String>>,
     type_by_ext: HashMap<String, String>
