@@ -4,6 +4,6 @@ name = "mime-types"
 version = "0.5.0"
 authors = ["wycats@gmail.com"]
 
-[[lib]]
+[lib]
 
 name = "mime-types"
