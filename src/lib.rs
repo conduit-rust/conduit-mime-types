@@ -1,4 +1,4 @@
-extern crate serialize;
+extern crate "rustc-serialize" as serialize;
 
 use std::collections::HashMap;
 use serialize::{Decodable, json};
