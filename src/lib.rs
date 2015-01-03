@@ -2,10 +2,11 @@ extern crate "rustc-serialize" as serialize;
 
 use std::collections::HashMap;
 use serialize::{Decodable, json};
+use serialize::json::Json;
 
 static JSON: &'static str = include_str!("../data/mime.json");
 
-#[deriving(Show, Clone, Eq, PartialEq)]
+#[derive(Show, Clone, Eq, PartialEq)]
 pub struct Types {
     ext_by_type: HashMap<String, Vec<String>>,
     type_by_ext: HashMap<String, String>
@@ -13,7 +14,7 @@ pub struct Types {
 
 impl Types {
     pub fn new() -> Result<Types, ()> {
-        let parsed = try!(json::from_str(JSON).map_err(|_| ()));
+        let parsed = try!(Json::from_str(JSON).map_err(|_| ()));
         let mut decoder = json::Decoder::new(parsed);
         let decoded: HashMap<String, Vec<String>> =
             try!(Decodable::decode(&mut decoder).map_err(|_| ()));
