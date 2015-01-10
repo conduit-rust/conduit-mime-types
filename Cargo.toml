@@ -1,7 +1,7 @@
 [package]
 
 name = "conduit-mime-types"
-version = "0.5.4"
+version = "0.6.0"
 authors = ["wycats@gmail.com"]
 license = "MIT"
 description = "MIME type definitions for conduit"
