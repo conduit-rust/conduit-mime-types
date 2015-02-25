@@ -1,12 +1,16 @@
+#![feature(path, os)]
+#![cfg_attr(test, feature(test))]
+
 extern crate "rustc-serialize" as serialize;
 
 use std::collections::HashMap;
+use std::path::Path;
 use serialize::{Decodable, json};
 use serialize::json::Json;
 
 static JSON: &'static str = include_str!("../data/mime.json");
 
-#[derive(Show, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Types {
     ext_by_type: HashMap<String, Vec<String>>,
     type_by_ext: HashMap<String, String>
@@ -31,15 +35,16 @@ impl Types {
     }
 
     pub fn get_extension<'a>(&'a self, name: &str) -> Option<&'a [String]> {
-        self.ext_by_type.get(name).map(|v| v.as_slice())
+        self.ext_by_type.get(name).map(|v| &v[..])
     }
 
     pub fn get_mime_type<'a>(&'a self, ext: &str) -> Option<&'a str> {
-        self.type_by_ext.get(ext).map(|v| v.as_slice())
+        self.type_by_ext.get(ext).map(|v| &v[..])
     }
 
     pub fn mime_for_path<'a>(&'a self, path: &Path) -> &'a str {
-        path.extension_str()
+        path.extension()
+            .and_then(|s| s.to_str())
             .and_then(|ext| self.get_mime_type(ext))
             .unwrap_or_else(|| "text/plain")
     }
@@ -48,6 +53,7 @@ impl Types {
 #[cfg(test)]
 mod test {
     extern crate test;
+    use std::path::Path;
     use Types;
 
     #[bench]
@@ -60,7 +66,7 @@ mod test {
     #[test]
     fn test_by_ext() {
         let t = Types::new().ok().expect("Types didn't load");
-        assert_eq!(t.get_extension("text/css"), Some(["css".to_string()].as_slice()));
+        assert_eq!(t.get_extension("text/css").unwrap(), ["css".to_string()]);
     }
 
     #[test]
@@ -83,6 +89,6 @@ mod test {
     }
 
     fn test_path(types: &Types, path: &str, expected: &str) {
-        assert_eq!(types.mime_for_path(&Path::new(path)), expected);
+        assert_eq!(types.mime_for_path(Path::new(path)), expected);
     }
 }
