@@ -1,12 +1,11 @@
-#![feature(path, os)]
 #![cfg_attr(test, feature(test))]
 
-extern crate "rustc-serialize" as serialize;
+extern crate rustc_serialize;
 
 use std::collections::HashMap;
 use std::path::Path;
-use serialize::{Decodable, json};
-use serialize::json::Json;
+use rustc_serialize::{Decodable, json};
+use rustc_serialize::json::Json;
 
 static JSON: &'static str = include_str!("../data/mime.json");
 
