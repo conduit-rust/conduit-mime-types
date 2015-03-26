@@ -1,6 +1,6 @@
 [package]
 
-name = "conduit-mime-types"
+name = "conduit_mime_types"
 version = "0.7.3"
 authors = ["wycats@gmail.com"]
 license = "MIT"
