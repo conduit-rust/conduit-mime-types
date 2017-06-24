@@ -1,11 +1,11 @@
 #![cfg_attr(test, feature(test))]
 
-extern crate rustc_serialize;
+extern crate serde;
+extern crate serde_json;
 
 use std::collections::HashMap;
 use std::path::Path;
-use rustc_serialize::{Decodable, json};
-use rustc_serialize::json::Json;
+use serde::{Deserialize};
 
 static JSON: &'static str = include_str!("../data/mime.json");
 
@@ -17,20 +17,19 @@ pub struct Types {
 
 impl Types {
     pub fn new() -> Result<Types, ()> {
-        let parsed = try!(Json::from_str(JSON).map_err(|_| ()));
-        let mut decoder = json::Decoder::new(parsed);
-        let decoded: HashMap<String, Vec<String>> =
-            try!(Decodable::decode(&mut decoder).map_err(|_| ()));
+        let mut deserializer = serde_json::Deserializer::from_str(JSON);
+        let deserialized: HashMap<String, Vec<String>> =
+            Deserialize::deserialize(&mut deserializer).map_err(|_| ())?;
 
         let mut by_ext = HashMap::new();
 
-        for (mime_type, exts) in decoded.iter() {
+        for (mime_type, exts) in deserialized.iter() {
             for ext in exts.iter() {
                 by_ext.insert(ext.clone(), mime_type.clone());
             }
         }
 
-        Ok(Types { ext_by_type: decoded, type_by_ext: by_ext })
+        Ok(Types { ext_by_type: deserialized, type_by_ext: by_ext })
     }
 
     pub fn get_extension<'a>(&'a self, name: &str) -> Option<&'a [String]> {
