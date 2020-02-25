@@ -8,7 +8,7 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::Path;
 
-static JSON: &'static str = include_str!("../data/mime.json");
+static JSON: &str = include_str!("../data/mime.json");
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Types {
