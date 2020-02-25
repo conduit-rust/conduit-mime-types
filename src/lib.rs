@@ -3,16 +3,16 @@
 extern crate serde;
 extern crate serde_json;
 
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::Path;
-use serde::{Deserialize};
 
 static JSON: &'static str = include_str!("../data/mime.json");
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Types {
     ext_by_type: HashMap<String, Vec<String>>,
-    type_by_ext: HashMap<String, String>
+    type_by_ext: HashMap<String, String>,
 }
 
 impl Types {
@@ -29,7 +29,10 @@ impl Types {
             }
         }
 
-        Ok(Types { ext_by_type: deserialized, type_by_ext: by_ext })
+        Ok(Types {
+            ext_by_type: deserialized,
+            type_by_ext: by_ext,
+        })
     }
 
     pub fn get_extension<'a>(&'a self, name: &str) -> Option<&'a [String]> {
@@ -56,9 +59,7 @@ mod test {
 
     #[bench]
     fn bench_load_types(b: &mut test::Bencher) {
-        b.iter(|| {
-            Types::new()
-        });
+        b.iter(|| Types::new());
     }
 
     #[test]
