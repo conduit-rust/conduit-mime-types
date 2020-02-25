@@ -1,3 +1,4 @@
+#![warn(rust_2018_idioms)]
 #![cfg_attr(test, feature(test))]
 
 extern crate serde;
