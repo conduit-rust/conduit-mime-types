@@ -1,31 +1,28 @@
-use serde::Deserialize;
+mod data;
+
 use std::collections::HashMap;
 use std::path::Path;
 
-static JSON: &str = include_str!("../data/mime.json");
-
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Types {
-    ext_by_type: HashMap<String, Vec<String>>,
+    pub(crate) ext_by_type: HashMap<String, Vec<String>>,
     type_by_ext: HashMap<String, String>,
 }
 
 impl Types {
     pub fn new() -> Result<Types, ()> {
-        let mut deserializer = serde_json::Deserializer::from_str(JSON);
-        let deserialized: HashMap<String, Vec<String>> =
-            Deserialize::deserialize(&mut deserializer).map_err(|_| ())?;
-
+        let mut by_type = HashMap::new();
         let mut by_ext = HashMap::new();
+        for (mime_type, exts) in data::MIME_TYPES.iter() {
+            by_type.insert(mime_type.to_string(), exts.iter().map(|ext| ext.to_string()).collect());
 
-        for (mime_type, exts) in deserialized.iter() {
             for ext in exts.iter() {
-                by_ext.insert(ext.clone(), mime_type.clone());
+                by_ext.insert(ext.to_string(), mime_type.to_string());
             }
         }
 
         Ok(Types {
-            ext_by_type: deserialized,
+            ext_by_type: by_type,
             type_by_ext: by_ext,
         })
     }
@@ -49,7 +46,21 @@ impl Types {
 #[cfg(test)]
 mod test {
     use crate::Types;
+    use serde::Deserialize;
+    use std::collections::HashMap;
     use std::path::Path;
+
+    static JSON: &str = include_str!("../data/mime.json");
+
+    #[test]
+    fn test_against_json_data() {
+        let mut deserializer = serde_json::Deserializer::from_str(JSON);
+        let deserialized: HashMap<String, Vec<String>> =
+            Deserialize::deserialize(&mut deserializer).unwrap();
+
+        let t = Types::new().ok().expect("Types didn't load");
+        assert_eq!(t.ext_by_type, deserialized);
+    }
 
     #[test]
     fn test_by_ext() {
