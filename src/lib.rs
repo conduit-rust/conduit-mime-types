@@ -1,5 +1,4 @@
 #![warn(rust_2018_idioms)]
-#![cfg_attr(test, feature(test))]
 
 extern crate serde;
 extern crate serde_json;
@@ -54,14 +53,8 @@ impl Types {
 
 #[cfg(test)]
 mod test {
-    extern crate test;
     use std::path::Path;
     use Types;
-
-    #[bench]
-    fn bench_load_types(b: &mut test::Bencher) {
-        b.iter(|| Types::new());
-    }
 
     #[test]
     fn test_by_ext() {
