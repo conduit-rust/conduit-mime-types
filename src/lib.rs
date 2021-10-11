@@ -1,8 +1,3 @@
-#![warn(rust_2018_idioms)]
-
-extern crate serde;
-extern crate serde_json;
-
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::Path;
@@ -53,8 +48,8 @@ impl Types {
 
 #[cfg(test)]
 mod test {
+    use crate::Types;
     use std::path::Path;
-    use Types;
 
     #[test]
     fn test_by_ext() {
