@@ -1,3 +1,4 @@
+use serde::Deserialize;
 use std::collections::{BTreeMap, HashSet};
 use std::env;
 use std::fs::File;
@@ -6,8 +7,14 @@ use std::path::Path;
 
 static JSON: &str = include_str!("data/mime.json");
 
+#[derive(Debug, Deserialize)]
+struct Record {
+    #[serde(default)]
+    extensions: Vec<String>,
+}
+
 fn main() {
-    let json: BTreeMap<String, Vec<String>> = serde_json::from_str(JSON).unwrap();
+    let json: BTreeMap<String, Record> = serde_json::from_str(JSON).unwrap();
 
     let path = Path::new(&env::var("OUT_DIR").unwrap()).join("codegen.rs");
     let mut file = BufWriter::new(File::create(&path).unwrap());
@@ -16,8 +23,9 @@ fn main() {
     let mut ext_by_type = phf_codegen::Map::new();
     let mut type_by_ext = phf_codegen::Map::new();
 
-    for (mime_type, exts) in json.iter() {
+    for (mime_type, record) in json.iter() {
         let mime_type_value = format!("\"{}\"", mime_type);
+        let exts = &record.extensions;
 
         for ext in exts {
             if used_exts.insert(ext) {
