@@ -5,19 +5,19 @@ use std::path::Path;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Types {
-    pub(crate) ext_by_type: HashMap<String, Vec<String>>,
-    type_by_ext: HashMap<String, String>,
+    pub(crate) ext_by_type: HashMap<&'static str, Vec<&'static str>>,
+    type_by_ext: HashMap<&'static str, &'static str>,
 }
 
 impl Types {
     pub fn new() -> Result<Types, ()> {
         let mut by_type = HashMap::new();
         let mut by_ext = HashMap::new();
-        for (mime_type, exts) in data::MIME_TYPES.iter() {
-            by_type.insert(mime_type.to_string(), exts.iter().map(|ext| ext.to_string()).collect());
+        for (mime_type, exts) in data::MIME_TYPES {
+            by_type.insert(*mime_type, exts.iter().map(|ext| *ext).collect());
 
             for ext in exts.iter() {
-                by_ext.insert(ext.to_string(), mime_type.to_string());
+                by_ext.insert(*ext, *mime_type);
             }
         }
 
@@ -27,15 +27,15 @@ impl Types {
         })
     }
 
-    pub fn get_extension<'a>(&'a self, name: &str) -> Option<&'a [String]> {
+    pub fn get_extension(&self, name: &str) -> Option<&[&str]> {
         self.ext_by_type.get(name).map(|v| &v[..])
     }
 
-    pub fn get_mime_type<'a>(&'a self, ext: &str) -> Option<&'a str> {
-        self.type_by_ext.get(ext).map(|v| &v[..])
+    pub fn get_mime_type(&self, ext: &str) -> Option<&str> {
+        self.type_by_ext.get(ext).map(|mime_type| *mime_type)
     }
 
-    pub fn mime_for_path<'a>(&'a self, path: &Path) -> &'a str {
+    pub fn mime_for_path(&self, path: &Path) -> &str {
         path.extension()
             .and_then(|s| s.to_str())
             .and_then(|ext| self.get_mime_type(ext))
@@ -47,7 +47,7 @@ impl Types {
 mod test {
     use crate::Types;
     use serde::Deserialize;
-    use std::collections::HashMap;
+    use std::collections::BTreeMap;
     use std::path::Path;
 
     static JSON: &str = include_str!("../data/mime.json");
@@ -55,11 +55,14 @@ mod test {
     #[test]
     fn test_against_json_data() {
         let mut deserializer = serde_json::Deserializer::from_str(JSON);
-        let deserialized: HashMap<String, Vec<String>> =
+        let deserialized: BTreeMap<String, Vec<String>> =
             Deserialize::deserialize(&mut deserializer).unwrap();
 
         let t = Types::new().ok().expect("Types didn't load");
-        assert_eq!(t.ext_by_type, deserialized);
+        for (mime_type, exts) in deserialized {
+            let bundled_exts = t.get_extension(&mime_type).unwrap();
+            assert_eq!(bundled_exts, exts);
+        }
     }
 
     #[test]
