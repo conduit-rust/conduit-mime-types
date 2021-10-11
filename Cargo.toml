@@ -14,10 +14,3 @@ serde_json = "1.0"
 
 [dependencies]
 phf = "0.10.0"
-
-[dev-dependencies]
-criterion = { version = "0.3", features = ["html_reports"] }
-
-[[bench]]
-name = "load-data"
-harness = false
