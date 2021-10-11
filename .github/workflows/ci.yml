@@ -33,3 +33,12 @@ jobs:
       - run: rustup component add rustfmt
       - uses: Swatinem/rust-cache@v1.3.0
       - run: cargo fmt --all -- --check
+
+  clippy:
+    name: clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: rustup component add clippy
+      - uses: Swatinem/rust-cache@v1.3.0
+      - run: cargo clippy --workspace -- --deny warnings
