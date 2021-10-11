@@ -1,0 +1,13 @@
+[package]
+name = "generate-data-file"
+version = "0.0.0"
+edition = "2018"
+
+[[bin]]
+name = "generate"
+path = "generate.rs"
+
+[dependencies]
+anyhow = "1.0.44"
+serde = "1.0.130"
+serde_json = "1.0.68"

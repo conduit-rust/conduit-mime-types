@@ -8,6 +8,9 @@ description = "MIME type definitions for conduit"
 repository = "https://github.com/conduit-rust/mime-types"
 edition = "2018"
 
+[workspace]
+members = ["generate-data-file"]
+
 [dev-dependencies]
 criterion = { version = "0.3", features = ["html_reports"] }
 serde = "1.0"
