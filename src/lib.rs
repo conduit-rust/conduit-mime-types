@@ -10,11 +10,10 @@ pub fn get_mime_type(ext: &str) -> Option<&str> {
     TYPE_BY_EXT.get(ext).copied()
 }
 
-pub fn mime_for_path(path: &Path) -> &str {
+pub fn mime_for_path(path: &Path) -> Option<&str> {
     path.extension()
         .and_then(|s| s.to_str())
         .and_then(|ext| get_mime_type(ext))
-        .unwrap_or_else(|| "text/plain")
 }
 
 #[cfg(test)]
@@ -34,8 +33,8 @@ mod test {
 
     #[test]
     fn test_by_path() {
-        test_path("foo", "text/plain");
-        test_path("/path/to/foo", "text/plain");
+        test_path_none("foo");
+        test_path_none("/path/to/foo");
         test_path("foo.css", "text/css");
         test_path("/path/to/foo.css", "text/css");
         test_path("foo.html.css", "text/css");
@@ -44,6 +43,10 @@ mod test {
     }
 
     fn test_path(path: &str, expected: &str) {
-        assert_eq!(mime_for_path(Path::new(path)), expected);
+        assert_eq!(mime_for_path(Path::new(path)), Some(expected));
+    }
+
+    fn test_path_none(path: &str) {
+        assert_eq!(mime_for_path(Path::new(path)), None);
     }
 }
