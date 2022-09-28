@@ -13,7 +13,7 @@ pub fn get_mime_type(ext: &str) -> Option<&str> {
 pub fn mime_for_path(path: &Path) -> Option<&str> {
     path.extension()
         .and_then(|s| s.to_str())
-        .and_then(|ext| get_mime_type(ext))
+        .and_then(get_mime_type)
 }
 
 #[cfg(test)]
